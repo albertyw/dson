@@ -13,6 +13,8 @@ class DSON:
             dson = DSON._dump_number(obj)
         if isinstance(obj, str):
             dson = DSON._dump_string(obj)
+        if isinstance(obj, bool):
+            dson = DSON._dump_boolean(obj)
         return dson
 
     @staticmethod
@@ -28,6 +30,13 @@ class DSON:
         """ Converts python strings into DSON strings """
         dson = json.dumps(obj_str)
         return dson
+
+    @staticmethod
+    def _dump_boolean(obj_bool):
+        """ Converts python booleans into DSON strings """
+        if obj_bool:
+            return 'yes'
+        return 'no'
 
 
 class TestNumber(unittest.TestCase):
@@ -56,6 +65,14 @@ class TestString(unittest.TestCase):
 
     def test_special_char_string(self):
         self.assertEqual(DSON.dump("asdf\n"), '"asdf\\n"')
+
+class TestBoolean(unittest.TestCase):
+    def test_false(self):
+        self.assertEqual(DSON.dump(False), 'no')
+
+    def test_true(self):
+        self.assertEqual(DSON.dump(True), 'yes')
+
 
 if __name__ == '__main__':
     unittest.main()
