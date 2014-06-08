@@ -12,6 +12,11 @@ class DSON:
     OBJECT_SPACERS = [',', '.', '!', '?']
 
     @staticmethod
+    def load(dson):
+        """ Main method to convert dson into a python object """
+        return NotImplementedError
+
+    @staticmethod
     def dump(obj):
         """ Main method to convert python objects into a DSON string """
         dson = None
