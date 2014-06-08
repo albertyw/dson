@@ -9,10 +9,12 @@ import unittest
 class DSON:
 
     LIST_SPACERS = ['and', 'also']
+    OBJECT_SPACERS = [',', '.', '!', '?']
 
     @staticmethod
     def dump(obj):
         """ Main method to convert python objects into a DSON string """
+        dson = None
         if isinstance(obj, (float, int, long)):
             dson = DSON._dump_number(obj)
         if isinstance(obj, str):
@@ -23,6 +25,10 @@ class DSON:
             dson = DSON._dump_none(obj)
         if isinstance(obj, list):
             dson = DSON._dump_list(obj)
+        if isinstance(obj, dict):
+            dson = DSON._dump_dict(obj)
+        if dson == None:
+            raise ValueError("Unserializable value")
         return dson
 
     @staticmethod
@@ -61,6 +67,22 @@ class DSON:
                 dson += ' ' + random.choice(DSON.LIST_SPACERS)
             dson += ' '
         dson += 'many'
+        return dson
+
+    @staticmethod
+    def _dump_dict(obj_dict):
+        """ Converts python dict into DSON dicts """
+        dson = 'such '
+        i = 0
+        for k, v in obj_dict.items():
+            dson += DSON.dump(k)
+            dson += ' is '
+            dson += DSON.dump(v)
+            if i != len(obj_dict) - 1:
+                dson += random.choice(DSON.OBJECT_SPACERS)
+            dson += ' '
+            i += 1
+        dson += 'wow'
         return dson
 
 
@@ -117,6 +139,19 @@ class TestList(unittest.TestCase):
         possibilities.append('so "asdf" and 4 many')
         possibilities.append('so "asdf" also 4 many')
         self.assertTrue(DSON.dump(['asdf', 4]) in possibilities)
+
+
+class TestDict(unittest.TestCase):
+    def test_dict(self):
+        expected = 'such "asdf" is yes wow'
+        dson = DSON.dump({'asdf': True})
+        self.assertEqual(dson, expected)
+
+    def test_large_dict(self):
+        import re
+        dson = DSON.dump({'asdf': True, 'qwer': 4})
+        regex = re.compile('such "qwer" is 4[,\.\!\?] "asdf" is yes wow')
+        self.assertTrue(regex.match(dson))
 
 
 if __name__ == '__main__':
