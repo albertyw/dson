@@ -15,6 +15,8 @@ class DSON:
             dson = DSON._dump_string(obj)
         if isinstance(obj, bool):
             dson = DSON._dump_boolean(obj)
+        if obj == None:
+            dson = DSON._dump_none(obj)
         return dson
 
     @staticmethod
@@ -37,6 +39,11 @@ class DSON:
         if obj_bool:
             return 'yes'
         return 'no'
+
+    @staticmethod
+    def _dump_none(obj_none):
+        """ Converts python None into DSON strings """
+        return 'empty'
 
 
 class TestNumber(unittest.TestCase):
@@ -66,12 +73,18 @@ class TestString(unittest.TestCase):
     def test_special_char_string(self):
         self.assertEqual(DSON.dump("asdf\n"), '"asdf\\n"')
 
+
 class TestBoolean(unittest.TestCase):
     def test_false(self):
         self.assertEqual(DSON.dump(False), 'no')
 
     def test_true(self):
         self.assertEqual(DSON.dump(True), 'yes')
+
+
+class TestNone(unittest.TestCase):
+    def test_none(self):
+        self.assertEqual(DSON.dump(None), 'empty')
 
 
 if __name__ == '__main__':
